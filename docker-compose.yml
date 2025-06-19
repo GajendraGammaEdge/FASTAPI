@@ -1,0 +1,32 @@
+
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - '5433:5432'
+    volumes:
+      - type: bind
+        source: ./static
+        target: /home/my/Documents/PythonLearning/FASTJWT/static
+  healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  fatapi:
+    build: ./
+    container_name: fastapi4
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    command: uvicorn main:app --host 0.0.0.0 --port 8080
+
+volumes:
+  postgres_data:
