@@ -10,14 +10,11 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
     export PATH="/root/.local/bin:$PATH" && \
     /root/.local/bin/poetry --version
 
+RUN pip install debugpy
 COPY pyproject.toml poetry.lock* /app/
-RUN pip install alembic 
-
 RUN /root/.local/bin/poetry install --no-root
-
-COPY . .
 
 EXPOSE 8080
 
-CMD ["/root/.local/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
-
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
