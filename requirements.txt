@@ -1,0 +1,11 @@
+# fastapi
+# uvicorn[standard]
+# pydantic
+# sqlalchemy
+# python-multipart
+# pydantic[email]
+
+# sqlalchemy[asyncio]
+# sqlmodel
+# alembic
+# psycopg2-binary 

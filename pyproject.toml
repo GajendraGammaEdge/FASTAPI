@@ -1,0 +1,49 @@
+[project]
+name = "GAP"
+version = "0.1.19"
+description = "This Project is RAG And CNN where we use both generation methods"
+authors = [
+    {name = "Gajendra", email = "gajendrapatidar9109@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.11"
+
+# Main dependencies
+dependencies = [
+    "fastapi>=0.123.0",
+    "uvicorn[standard]>=0.38.0",
+    "pydantic>=2.12.4",
+    "pydantic[email]>=2.12.4",
+    "sqlalchemy>=2.0.44",
+    "sqlalchemy[asyncio]>=2.0.44",
+    "sqlmodel>=0.0.27",
+    "python-multipart>=0.0.20",
+    "alembic>=1.11.0",
+    "psycopg2-binary>=2.9.7",
+    "httpx>=0.28.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.2.1",
+    "google-api-python-client>=2.187.0",
+    "google-auth>=2.43.0",
+    "google-auth-httplib2>=0.2.1",
+    "google-auth-oauthlib>=1.0.0",
+    "google-generativeai>=0.3.2",
+    "python-dotenv>=1.2.0"
+,
+]
+
+[tool.poetry]
+packages = [{include = "app"}]  # Assuming your main code is in app/
+
+# Development dependencies
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.21.0"
+black = "^23.0"
+isort = "^5.12"
+mypy = "^1.5.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
