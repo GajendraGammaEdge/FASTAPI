@@ -18,3 +18,4 @@ async def health_check():
 
 if __name__ == "__main__":
     print("Run this app using: uvicorn main:app --reload")
+
