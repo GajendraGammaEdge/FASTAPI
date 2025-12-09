@@ -6,6 +6,7 @@ from app.model.user import User
 from app.model.chat_message import ChatMessage
 from app.schema.chat_message import ChatMessageCreate, ChatMessageResponse
 from app.rabbitmq.publisher import publish_message
+from app.service.chat_service import save_chat_message_to_db
 
 router = APIRouter()
 
@@ -28,8 +29,8 @@ def send_message(msg: ChatMessageCreate, db: Session = Depends(get_db)):
     receiver = db.query(User).filter(User.id == msg.receiver_id).first()
     if not receiver:
         raise HTTPException(status_code=404, detail="Receiver not found")
-
-    # Publish message to RabbitMQ
+    print(f"router message :- {msg.message}")
+    save_chat_message_to_db(msg,db)
     publish_message(msg.sender_id, msg.receiver_id, msg.message)
 
     return {"message": "Message sent successfully"}

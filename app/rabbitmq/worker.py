@@ -14,7 +14,7 @@ def get_rabbitmq_connection():
 def callback(ch, method, properties, body):
     data = json.loads(body)
     save_chat_message_to_db(data)
-    print(f"Received message from {data['sender_id']} to {data['receiver_id']}")
+    print(f"Received message from {data.sender_id} to {data.receiver_id}")
 
 def start_worker():
     connection, channel = get_rabbitmq_connection()
