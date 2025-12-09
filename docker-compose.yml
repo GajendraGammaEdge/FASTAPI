@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build: .
@@ -5,9 +7,13 @@ services:
       - .:/app
     depends_on:
       - db
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload 
+      - rabbitmq
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:12345@db:5432/cnn
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: password123
     ports:
       - "8080:8080"
       - "5678:5678"
@@ -33,6 +39,17 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:12345@db:5432/cnn
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
   postgres_data:
+  rabbitmq_data:

@@ -4,11 +4,14 @@ from app.router.user_router import router as user_router
 from app.db.db_configuration import Base, engine  # make sure these are correct imports
 from app.router.uploaded_file_router import router as file_router
 from app.model import *
+from app.router.chat_router import router as chat_router
+
 app = FastAPI()
 
 # include router correctly
 app.include_router(file_router)
 app.include_router(user_router)
+app.include_router(chat_router)
 Base.metadata.create_all(bind=engine)
 
 
