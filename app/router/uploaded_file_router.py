@@ -12,13 +12,12 @@ async def uploading_file(
     db: Session = Depends(get_db),
     file: UploadFile = File(..., description="Upload images or PDFs")
 ):
-    # Fetch user
+
     user_services = UserServices(db)
     user = user_services.get_user(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Upload file
     uploaded = await upload_file(db, user, file)
     return {"message": "File successfully uploaded", "file_name": uploaded.file_name}
 
