@@ -2,19 +2,34 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV POETRY_VIRTUALENVS_CREATE=false
+# Disable poetry virtualenv creation inside Docker
+ENV POETRY_VIRTUALENVS_CREATE=false \
+    PATH="/root/.local/bin:$PATH"
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y curl gcc libpq-dev && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    export PATH="/root/.local/bin:$PATH" && \
-    /root/.local/bin/poetry --version
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - && poetry --version
 
+# Install debugpy for debugging
 RUN pip install debugpy
+
+# Copy project dependency files and install dependencies
 COPY pyproject.toml poetry.lock* /app/
-RUN /root/.local/bin/poetry install --no-root
+RUN poetry install --no-root
 
-EXPOSE 8080
-
+# Copy the full app
 COPY . .
-CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+
+# Make wait-for-it.sh executable
+RUN chmod +x wait-for-it.sh
+
+# Expose ports for app and debug
+EXPOSE 8080 5678
+
+# Default CMD runs uvicorn with debugpy
+CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+
+
+
