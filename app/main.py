@@ -12,7 +12,7 @@ app = FastAPI()
 app.include_router(file_router)
 app.include_router(user_router)
 app.include_router(chat_router)
-Base.metadata.create_all(bind=engine)
+# Removed Base.metadata.create_all() - migrations are handled by Alembic
 
 
 @app.get("/health-check")
