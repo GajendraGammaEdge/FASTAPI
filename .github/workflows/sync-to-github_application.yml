@@ -38,4 +38,7 @@ jobs:
 
       - name: Push main branch to RAG_Application
         run: |
-          git push target main --force-with--lease
+          git push target main --force-with-lease
+
+
+
