@@ -1,45 +1,35 @@
-import sys
 import os
-from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
+from logging.config import fileConfig
 
-# Add project root to sys.path
+import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.db.db_configuration import Base  # Make sure this imports your SQLAlchemy Base
-import app.model  # Ensure models are imported so metadata is registered
+from app.db.db_configuration import Base
+import app.model
 
-# Alembic target metadata
 target_metadata = Base.metadata
-
-# Load Alembic config
 config = context.config
 fileConfig(config.config_file_name)
 
-# Use DATABASE_URL environment variable if set (Docker-friendly)
 DATABASE_URL = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
 
 def run_migrations_online():
-    """Run migrations in 'online' mode."""
-
-    config = context.config
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        url=DATABASE_URL
     )
-    
 
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            compare_type=True,  # Detect column type changes
+            compare_type=True
         )
-
         with context.begin_transaction():
             context.run_migrations()
 
-# Run migrations
 run_migrations_online()

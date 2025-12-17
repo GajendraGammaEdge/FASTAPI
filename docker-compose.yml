@@ -1,38 +1,69 @@
-services:
-  app:
-    build: .
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload 
-    environment:
-      DATABASE_URL: postgresql+psycopg2://postgres:12345@db:5432/cnn
-    ports:
-      - "8080:8080"
-      - "5678:5678"
+version: "3.9"
 
+services:
   db:
     image: postgres:15
+    container_name: db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: cnn
-    ports:
-      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   alembic:
     build: .
-    command: /root/.local/bin/poetry run alembic upgrade head
-    volumes:
-      - .:/app
+    container_name: alembic
+    command: ["./wait-for-it.sh", "db:5432", "-t", "60", "--", "poetry", "run", "alembic", "upgrade", "head"]
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:12345@db:5432/cnn
+    volumes:
+      - .:/app
 
+  app:
+    build: .
+    container_name: app
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      alembic:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:12345@db:5432/cnn
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: password123
+    ports:
+      - "8080:8080"
+      - "5678:5678"
+    volumes:
+      - .:/app
+    command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
 
 volumes:
   postgres_data:
+  rabbitmq_data:

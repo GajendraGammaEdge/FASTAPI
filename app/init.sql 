@@ -1,0 +1,24 @@
+DO $$
+BEGIN
+    INSERT INTO users (username, email, password, first_name, last_name, date_of_birth, phone_number, address, city, state, country, postal_code, is_active, is_superuser, last_login, created_at, updated_at, profile_picture, bio)
+    SELECT *
+    FROM (
+        VALUES
+            ('arjun01', 'arjun01@example.com', 'password123', 'Arjun', 'Kumar', '1990-05-12', '9876543210', '123 MG Road', 'Mumbai', 'Maharashtra', 'India', '400001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/arjun01.png', 'Hello, I am Arjun!'),
+            ('ravi02', 'ravi02@example.com', 'password123', 'Ravi', 'Sharma', '1988-09-23', '9876543211', '45 Park Street', 'Kolkata', 'West Bengal', 'India', '700016', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/ravi02.png', 'Hi, I am Ravi.'),
+            ('neha03', 'neha03@example.com', 'password123', 'Neha', 'Patel', '1992-01-15', '9876543212', '22 MG Road', 'Ahmedabad', 'Gujarat', 'India', '380001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/neha03.png', 'Hey, I am Neha!'),
+            ('sneha04', 'sneha04@example.com', 'password123', 'Sneha', 'Rao', '1995-07-30', '9876543213', '56 Brigade Road', 'Bangalore', 'Karnataka', 'India', '560001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/sneha04.png', 'Hello from Sneha.'),
+            ('vikram05', 'vikram05@example.com', 'password123', 'Vikram', 'Singh', '1991-03-20', '9876543214', '78 Residency Road', 'Bangalore', 'Karnataka', 'India', '560025', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/vikram05.png', 'Vikram here!'),
+            ('isha06', 'isha06@example.com', 'password123', 'Isha', 'Gupta', '1993-11-11', '9876543215', '14 Park Avenue', 'Delhi', 'Delhi', 'India', '110001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/isha06.png', 'Hi, I am Isha.'),
+            ('aditya07', 'aditya07@example.com', 'password123', 'Aditya', 'Kohli', '1989-12-05', '9876543216', '33 MG Road', 'Pune', 'Maharashtra', 'India', '411001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/aditya07.png', 'Hello, Aditya here!'),
+            ('priya08', 'priya08@example.com', 'password123', 'Priya', 'Mehta', '1994-02-18', '9876543217', '101 Main Street', 'Jaipur', 'Rajasthan', 'India', '302001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/priya08.png', 'Hey, I am Priya.'),
+            ('rahul09', 'rahul09@example.com', 'password123', 'Rahul', 'Chopra', '1990-06-25', '9876543218', '12 Nehru Nagar', 'Lucknow', 'Uttar Pradesh', 'India', '226001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/rahul09.png', 'Rahul here!'),
+            ('anita10', 'anita10@example.com', 'password123', 'Anita', 'Verma', '1992-08-14', '9876543219', '55 MG Road', 'Chennai', 'Tamil Nadu', 'India', '600001', true, false, NOW(), NOW(), NOW(), 'https://example.com/profiles/anita10.png', 'Hello, I am Anita.')
+            -- Add the remaining 10 users similarly
+    ) AS new_users (username, email, password, first_name, last_name, date_of_birth, phone_number, address, city, state, country, postal_code, is_active, is_superuser, last_login, created_at, updated_at, profile_picture, bio)
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM users existing
+        WHERE existing.email = new_users.email
+    );
+END $$;
