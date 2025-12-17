@@ -10,17 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository without auth (so we can use PAT later)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
+          persist-credentials: false  # IMPORTANT: disables default GITHUB_TOKEN
 
-    
+      # Step 2: Configure Git user
       - name: Set Git config
         run: |
           git config user.name "GajendraGammaEdge"
           git config user.email "gajendra.patidar@gammaedge.io"
 
+      # Step 3: Detect if last commit is a merge
       - name: Check if last commit is a merge
         id: check_merge
         run: |
@@ -32,13 +35,12 @@ jobs:
           fi
           echo "Merge commit detected."
 
+      # Step 4: Add target repository using PAT
       - name: Add target repository
         run: |
-            git remote add target https://x-access-token:${{secrets.PERSONAL_ACCESS_TOKEN_GIT}}@github.com/GajendraGammaEdge/RAG_Application.git
+          git remote add target https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_GIT }}@github.com/GajendraGammaEdge/RAG_Application.git
 
+      # Step 5: Push main branch to target repository
       - name: Push main branch to RAG_Application
         run: |
           git push target main --force-with-lease
-
-
-
