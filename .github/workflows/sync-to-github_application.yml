@@ -34,7 +34,7 @@ jobs:
 
       - name: Add target repository
         run: |
-            git remote add target https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN}}@github.com/GajendraGammaEdge/RAG_Application.git
+            git remote add target https://x-access-token:${{secrets.PERSONAL_ACCESS_TOKEN_GIT}}@github.com/GajendraGammaEdge/RAG_Application.git
 
       - name: Push main branch to RAG_Application
         run: |
