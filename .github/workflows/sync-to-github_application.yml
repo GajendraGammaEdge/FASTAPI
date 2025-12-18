@@ -43,4 +43,4 @@ jobs:
       # Step 5: Push main branch to target repo
       - name: Push main branch to target
         run: |
-          git push target main --force-with-lease
+          git push target main 
