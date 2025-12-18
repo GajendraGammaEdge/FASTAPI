@@ -3,44 +3,39 @@ name: Sync main to RAG_Application on merge
 on:
   push:
     branches:
-      - main  # Trigger on push to main
+      - main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository without credentials
-      - name: Checkout repository
+      # 1️⃣ Checkout source repository
+      - name: Checkout source repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false  # disables default GITHUB_TOKEN
+          persist-credentials: false
 
-      # Step 2: Configure Git
+      # 2️⃣ Configure Git identity
       - name: Configure Git
         run: |
-          git config user.name "GajendraGammaEdge"
-          git config user.email "gajendra.patidar@gammaedge.io"
+          git config --global user.name "GajendraGammaEdge"
+          git config --global user.email "gajendra.patidar@gammaedge.io"
 
-      # Step 3: Detect if last commit is a merge
-      - name: Detect merge commit
-        id: merge_check
+      # 3️⃣ Ensure this is a merge commit
+      - name: Verify merge commit
         run: |
           PARENTS=$(git rev-list --parents -n 1 HEAD | wc -w)
-          # Merge commits have more than 2 entries (commit + 2 parents)
           if [ "$PARENTS" -le 2 ]; then
             echo "Not a merge commit. Exiting."
             exit 0
           fi
           echo "Merge commit detected."
 
-      # Step 4: Add target repo with PAT
-      - name: Add target repository
+      # 4️⃣ Push main branch to target repository using PAT
+      - name: Push to RAG_Application
+        env:
+          PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN_GIT }}
         run: |
-          git remote add target https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_GIT }}@github.com/GajendraGammaEdge/RAG_Application.git
-
-      # Step 5: Push main branch to target repo
-      - name: Push main branch to target
-        run: |
-          git push target main 
+          git push https://x-access-token:${PAT}@github.com/GajendraGammaEdge/RAG_Application.git main
