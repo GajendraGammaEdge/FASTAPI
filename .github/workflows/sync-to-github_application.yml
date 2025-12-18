@@ -38,4 +38,4 @@ jobs:
         env:
           PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN_GIT }}
         run: |
-          git push https://x-access-token:${PAT}@github.com/GajendraGammaEdge/RAG_Application.git main
+          git push https://x-access-token:${secrets.PERSONAL_ACCESS_TOKEN_GIT}@github.com/GajendraGammaEdge/RAG_Application.git main
